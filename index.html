@@ -132,6 +132,11 @@
             height: 720px;
             cursor: pointer;
             z-index: 5;
+            pointer-events: auto;
+        }
+
+        .girl.drag-disabled {
+            pointer-events: none;
         }
 
         .cherry {
@@ -279,9 +284,9 @@
         /* WELL DONE button */
         .welldone-button-container {
             position: absolute;
-            left: 520px;
+            left: 420px;
             top: 700px;
-            width: 200px;
+            width: 320px;
             height: 62px;
             cursor: pointer;
             z-index: 100;
@@ -291,7 +296,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            width: 200px;
+            width: 320px;
             height: 62px;
             background: #5eff00;
             border: 2px solid black;
@@ -301,7 +306,7 @@
             position: absolute;
             left: 7px;
             top: 6px;
-            width: 186px;
+            width: 306px;
             height: 48px;
             background: #5eff00;
             border: 2px solid black;
@@ -309,13 +314,14 @@
 
         .welldone-button-text {
             position: absolute;
-            left: 25px;
+            left: 20px;
             top: 17px;
             font-size: 24px;
             color: black;
             font-style: normal;
             line-height: normal;
             font-family: 'Arial Narrow', Arial, sans-serif;
+            white-space: nowrap;
         }
 
         .reset-button {
@@ -601,6 +607,12 @@
             // Force highest z-index
             draggedElement.style.zIndex = '9999';
 
+            // Disable girl pointer events during drag to prevent blocking
+            const girl = document.getElementById('girl');
+            if (girl) {
+                girl.classList.add('drag-disabled');
+            }
+
             const rect = draggedElement.getBoundingClientRect();
             offsetX = e.clientX - rect.left;
             offsetY = e.clientY - rect.top;
@@ -634,6 +646,12 @@
             if (!draggedElement) return;
 
             draggedElement.classList.remove('dragging');
+
+            // Re-enable girl pointer events after drag
+            const girl = document.getElementById('girl');
+            if (girl) {
+                girl.classList.remove('drag-disabled');
+            }
 
             // Check if dropped on girl's center
             if (isOverGirlCenter(draggedElement)) {
@@ -821,6 +839,12 @@
                 assembledContainer.style.zIndex = '9999';
                 assembledContainer.style.cursor = 'grabbing';
 
+                // Disable girl pointer events during drag
+                const girl = document.getElementById('girl');
+                if (girl) {
+                    girl.classList.add('drag-disabled');
+                }
+
                 const rect = assembledContainer.getBoundingClientRect();
                 assembledOffsetX = e.clientX - rect.left;
                 assembledOffsetY = e.clientY - rect.top;
@@ -841,6 +865,12 @@
 
                     assembledDragging = false;
                     assembledContainer.style.cursor = 'grab';
+
+                    // Re-enable girl pointer events after drag
+                    const girl = document.getElementById('girl');
+                    if (girl) {
+                        girl.classList.remove('drag-disabled');
+                    }
 
                     // Check if dropped on girl's mouth
                     if (isOverGirlCenter(assembledContainer)) {
