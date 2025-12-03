@@ -279,11 +279,12 @@
         /* WELL DONE button */
         .welldone-button-container {
             position: absolute;
-            left: 800px;
-            top: 780px;
+            left: 620px;
+            top: 700px;
             width: 200px;
             height: 62px;
             cursor: pointer;
+            z-index: 100;
         }
 
         .welldone-button-outer {
@@ -378,6 +379,10 @@
         /* Assembled icecream */
         .assembled {
             position: absolute;
+            pointer-events: auto;
+        }
+
+        .assembled > * {
             pointer-events: none;
         }
     </style>
@@ -650,21 +655,22 @@
             const girlRect = girl.getBoundingClientRect();
             const elementRect = element.getBoundingClientRect();
 
-            // Calculate girl's center area (middle 50% of the image)
-            const girlCenterX = girlRect.left + girlRect.width / 2;
-            const girlCenterY = girlRect.top + girlRect.height / 2;
-            const girlCenterWidth = girlRect.width * 0.3;
-            const girlCenterHeight = girlRect.height * 0.3;
+            // Calculate girl's mouth area (lower center part of the image)
+            // Mouth is approximately in the bottom 40% and center 35% of the girl image
+            const mouthCenterX = girlRect.left + girlRect.width * 0.5;
+            const mouthCenterY = girlRect.top + girlRect.height * 0.65; // Lower part
+            const mouthWidth = girlRect.width * 0.20; // Narrower horizontal detection
+            const mouthHeight = girlRect.height * 0.15; // Smaller vertical detection
 
             const elementCenterX = elementRect.left + elementRect.width / 2;
             const elementCenterY = elementRect.top + elementRect.height / 2;
 
-            // Check if element center is in girl's center area
+            // Check if element center is in girl's mouth area
             return (
-                elementCenterX > girlCenterX - girlCenterWidth / 2 &&
-                elementCenterX < girlCenterX + girlCenterWidth / 2 &&
-                elementCenterY > girlCenterY - girlCenterHeight / 2 &&
-                elementCenterY < girlCenterY + girlCenterHeight / 2
+                elementCenterX > mouthCenterX - mouthWidth / 2 &&
+                elementCenterX < mouthCenterX + mouthWidth / 2 &&
+                elementCenterY > mouthCenterY - mouthHeight / 2 &&
+                elementCenterY < mouthCenterY + mouthHeight / 2
             );
         }
 
@@ -686,11 +692,16 @@
                 const elementRect = element.getBoundingClientRect();
 
                 const baseCenterX = baseRect.left + baseRect.width / 2;
+                const baseCenterY = baseRect.top + baseRect.height / 2;
                 const elementCenterX = elementRect.left + elementRect.width / 2;
+                const elementCenterY = elementRect.top + elementRect.height / 2;
 
-                // Check if horizontally aligned with base (within 100px)
-                if (Math.abs(baseCenterX - elementCenterX) < 100) {
-                    // Snap to base
+                // Check if close to base (within 150px horizontally and 250px vertically)
+                const horizontalDistance = Math.abs(baseCenterX - elementCenterX);
+                const verticalDistance = Math.abs(baseCenterY - elementCenterY);
+
+                if (horizontalDistance < 150 && verticalDistance < 250) {
+                    // Add to assembled items
                     if (!assembledItems.includes(element)) {
                         assembledItems.push(element);
                     }
@@ -717,14 +728,16 @@
 
             // Create a container for the assembled icecream
             const assembledContainer = document.createElement('div');
-            assembledContainer.className = 'assembled';
+            assembledContainer.className = 'assembled draggable';
             assembledContainer.style.position = 'absolute';
+            assembledContainer.style.cursor = 'grab';
+            assembledContainer.style.zIndex = '10';
+            assembledContainer.style.pointerEvents = 'auto';
 
-            // Calculate bounding box of all assembled items
+            // Calculate precise bounding box of all assembled items
             let minLeft = Infinity, minTop = Infinity, maxRight = -Infinity, maxBottom = -Infinity;
 
             assembledItems.forEach(item => {
-                const rect = item.getBoundingClientRect();
                 const left = parseInt(item.style.left) || parseInt(getComputedStyle(item).left);
                 const top = parseInt(item.style.top) || parseInt(getComputedStyle(item).top);
 
@@ -739,10 +752,11 @@
             assembledContainer.style.width = (maxRight - minLeft) + 'px';
             assembledContainer.style.height = (maxBottom - minTop) + 'px';
 
-            // Clone each assembled item into the container
+            // Clone each assembled item into the container with precise positioning
             assembledItems.forEach(item => {
                 const clone = item.cloneNode(true);
                 clone.classList.remove('draggable', 'dragging');
+                clone.style.pointerEvents = 'none'; // Prevent individual item interaction
 
                 const left = parseInt(item.style.left) || parseInt(getComputedStyle(item).left);
                 const top = parseInt(item.style.top) || parseInt(getComputedStyle(item).top);
@@ -750,6 +764,8 @@
                 clone.style.left = (left - minLeft) + 'px';
                 clone.style.top = (top - minTop) + 'px';
                 clone.style.position = 'absolute';
+                clone.style.margin = '0';
+                clone.style.padding = '0';
 
                 assembledContainer.appendChild(clone);
 
@@ -760,26 +776,46 @@
             // Add assembled container to frame1
             document.getElementById('frame1').appendChild(assembledContainer);
 
-            // Make the assembled container draggable as a whole
+            // Make the assembled container draggable as a whole using same drag system
+            let assembledDragging = false;
+            let assembledOffsetX = 0;
+            let assembledOffsetY = 0;
+
             assembledContainer.addEventListener('mousedown', function(e) {
-                const container = e.currentTarget;
-                const rect = container.getBoundingClientRect();
-                const offsetX = e.clientX - rect.left;
-                const offsetY = e.clientY - rect.top;
+                e.preventDefault();
+                e.stopPropagation();
+
+                assembledDragging = true;
+                assembledContainer.style.zIndex = '9999';
+                assembledContainer.style.cursor = 'grabbing';
+
+                const rect = assembledContainer.getBoundingClientRect();
+                assembledOffsetX = e.clientX - rect.left;
+                assembledOffsetY = e.clientY - rect.top;
 
                 function moveContainer(e) {
-                    container.style.left = (e.clientX - offsetX) + 'px';
-                    container.style.top = (e.clientY - offsetY) + 'px';
+                    if (!assembledDragging) return;
+                    e.preventDefault();
+
+                    assembledContainer.style.left = (e.clientX - assembledOffsetX) + 'px';
+                    assembledContainer.style.top = (e.clientY - assembledOffsetY) + 'px';
                 }
 
                 function stopMove() {
                     document.removeEventListener('mousemove', moveContainer);
                     document.removeEventListener('mouseup', stopMove);
 
-                    // Check if dropped on girl
-                    if (isOverGirlCenter(container)) {
+                    if (!assembledDragging) return;
+
+                    assembledDragging = false;
+                    assembledContainer.style.cursor = 'grab';
+
+                    // Check if dropped on girl's mouth
+                    if (isOverGirlCenter(assembledContainer)) {
                         playEatSound();
-                        container.style.display = 'none';
+                        assembledContainer.style.display = 'none';
+                    } else {
+                        assembledContainer.style.zIndex = '10';
                     }
                 }
 
