@@ -314,7 +314,7 @@
 
         .welldone-button-text {
             position: absolute;
-            left: 20px;
+            left: 50%;
             top: 17px;
             font-size: 24px;
             color: black;
@@ -322,6 +322,7 @@
             line-height: normal;
             font-family: 'Arial Narrow', Arial, sans-serif;
             white-space: nowrap;
+            transform: translateX(-50%);
         }
 
         .reset-button {
@@ -706,11 +707,11 @@
             const elementRect = element.getBoundingClientRect();
 
             // Calculate girl's mouth area (lower center part of the image)
-            // Mouth is approximately in the bottom 40% and center 35% of the girl image
+            // Expanded area for easier feeding
             const mouthCenterX = girlRect.left + girlRect.width * 0.5;
-            const mouthCenterY = girlRect.top + girlRect.height * 0.65; // Lower part
-            const mouthWidth = girlRect.width * 0.20; // Narrower horizontal detection
-            const mouthHeight = girlRect.height * 0.15; // Smaller vertical detection
+            const mouthCenterY = girlRect.top + girlRect.height * 0.60; // Mid-lower part
+            const mouthWidth = girlRect.width * 0.35; // Wider horizontal detection
+            const mouthHeight = girlRect.height * 0.30; // Larger vertical detection
 
             const elementCenterX = elementRect.left + elementRect.width / 2;
             const elementCenterY = elementRect.top + elementRect.height / 2;
