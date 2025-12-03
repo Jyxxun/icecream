@@ -279,7 +279,7 @@
         /* WELL DONE button */
         .welldone-button-container {
             position: absolute;
-            left: 620px;
+            left: 520px;
             top: 700px;
             width: 200px;
             height: 62px;
@@ -353,6 +353,13 @@
             top: -188px;
             width: 1549px;
             height: 1357px;
+            z-index: 1;
+        }
+
+        .eaten-item {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
         }
 
         img {
@@ -526,7 +533,7 @@
         </div>
 
         <!-- Reset button -->
-        <div class="reset-button element" onclick="resetGame()">
+        <div class="reset-button element" onclick="location.reload()">
             <img src="https://www.figma.com/api/mcp/asset/b1a8bc0a-9fa3-4949-96f7-316cf8cad90d" alt="" class="reset-circle">
             <div class="reset-text">RESET</div>
         </div>
@@ -551,6 +558,7 @@
         let isDragging = false;
         let dragStartX = 0;
         let dragStartY = 0;
+        let eatenItems = []; // Track eaten items for display in mouth screen
 
         // Initialize draggable elements
         document.addEventListener('DOMContentLoaded', function() {
@@ -631,6 +639,10 @@
             if (isOverGirlCenter(draggedElement)) {
                 // Play eating sound
                 playEatSound();
+
+                // Save eaten item information
+                saveEatenItem(draggedElement);
+
                 // Remove the element (eaten)
                 draggedElement.style.display = 'none';
             } else {
@@ -646,6 +658,26 @@
             setTimeout(function() {
                 isDragging = false;
             }, 100);
+        }
+
+        function saveEatenItem(element) {
+            // Clone the element and save its current state
+            const clone = element.cloneNode(true);
+            const rect = element.getBoundingClientRect();
+
+            // Get computed position
+            const left = parseInt(element.style.left) || parseInt(getComputedStyle(element).left);
+            const top = parseInt(element.style.top) || parseInt(getComputedStyle(element).top);
+
+            // Store the element info
+            eatenItems.push({
+                html: clone.outerHTML,
+                left: left,
+                top: top,
+                width: element.offsetWidth,
+                height: element.offsetHeight,
+                classList: Array.from(element.classList)
+            });
         }
 
         function isOverGirlCenter(element) {
@@ -813,6 +845,10 @@
                     // Check if dropped on girl's mouth
                     if (isOverGirlCenter(assembledContainer)) {
                         playEatSound();
+
+                        // Save the assembled icecream as eaten
+                        saveEatenItem(assembledContainer);
+
                         assembledContainer.style.display = 'none';
                     } else {
                         assembledContainer.style.zIndex = '10';
@@ -831,6 +867,51 @@
         function showMouth() {
             document.getElementById('frame1').classList.remove('active');
             document.getElementById('frame2').classList.add('active');
+
+            // Display all eaten items in the mouth screen
+            displayEatenItems();
+        }
+
+        function displayEatenItems() {
+            const frame2 = document.getElementById('frame2');
+
+            // Clear previous eaten items display
+            const previousEaten = frame2.querySelectorAll('.eaten-item');
+            previousEaten.forEach(item => item.remove());
+
+            // Display each eaten item
+            eatenItems.forEach((itemInfo, index) => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'eaten-item';
+                wrapper.innerHTML = itemInfo.html;
+
+                // Position the eaten item in mouth screen
+                // Scale down and arrange in the center of the mouth
+                const scale = 0.6; // Make items smaller
+                const itemsPerRow = 4;
+                const row = Math.floor(index / itemsPerRow);
+                const col = index % itemsPerRow;
+
+                const spacing = 150;
+                const startX = 400;
+                const startY = 200;
+
+                wrapper.style.left = (startX + col * spacing) + 'px';
+                wrapper.style.top = (startY + row * spacing) + 'px';
+                wrapper.style.transform = `scale(${scale})`;
+                wrapper.style.transformOrigin = 'top left';
+
+                // Remove dragging functionality from eaten items
+                const innerElement = wrapper.firstElementChild;
+                if (innerElement) {
+                    innerElement.classList.remove('draggable', 'dragging');
+                    innerElement.style.position = 'relative';
+                    innerElement.style.left = '0';
+                    innerElement.style.top = '0';
+                }
+
+                frame2.appendChild(wrapper);
+            });
         }
 
         function resetGame() {
