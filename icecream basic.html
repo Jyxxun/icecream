@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Cream Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Narrow', Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .screen {
+            display: none;
+            position: relative;
+            width: 1512px;
+            height: 982px;
+            background: white;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        /* Frame 1 - Main Game Screen */
+        #frame1 {
+            position: relative;
+        }
+
+        .star-container {
+            position: absolute;
+            left: -527.42px;
+            top: -645.18px;
+            width: 2295.777px;
+            height: 2057.318px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .star-rotated {
+            transform: rotate(15.778deg);
+        }
+
+        .star-img {
+            width: 1936.171px;
+            height: 1590.781px;
+        }
+
+        .element {
+            position: absolute;
+        }
+
+        .cone {
+            left: 547px;
+            top: 518px;
+            width: 163px;
+            height: 310px;
+        }
+
+        .shortcone {
+            left: 388px;
+            top: 429px;
+            width: 186px;
+            height: 246px;
+        }
+
+        .cream {
+            left: 487px;
+            top: 232px;
+            width: 213px;
+            height: 189px;
+        }
+
+        .mint {
+            left: 263px;
+            top: 60px;
+            width: 224px;
+            height: 202px;
+        }
+
+        .pink {
+            left: 194px;
+            top: 378px;
+            width: 215px;
+            height: 217px;
+        }
+
+        .blue {
+            left: 669px;
+            top: 549px;
+            width: 218px;
+            height: 202px;
+        }
+
+        .rainbow {
+            left: 778px;
+            top: 290px;
+            width: 251px;
+            height: 238px;
+        }
+
+        .girl {
+            left: 923px;
+            top: 301px;
+            width: 631px;
+            height: 720px;
+            cursor: pointer;
+        }
+
+        .cherry {
+            left: 715px;
+            top: 86px;
+            width: 245px;
+            height: 228px;
+        }
+
+        .pinkcandy {
+            left: 568px;
+            top: 77px;
+            width: 138px;
+            height: 84px;
+        }
+
+        .bluecandy {
+            left: 636px;
+            top: -11px;
+            width: 151px;
+            height: 84px;
+        }
+
+        .greencandy-container {
+            left: 121px;
+            top: 144px;
+            width: 157.077px;
+            height: 114.269px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .greencandy-rotated {
+            transform: rotate(344.75deg);
+        }
+
+        .greencandy {
+            width: 141px;
+            height: 80px;
+        }
+
+        .whiteworm {
+            left: 411px;
+            top: 234px;
+            width: 98px;
+            height: 121px;
+        }
+
+        .yellowworm {
+            left: 330px;
+            top: 301px;
+            width: 89px;
+            height: 131px;
+        }
+
+        .blueworm {
+            left: 652px;
+            top: 414px;
+            width: 126px;
+            height: 77px;
+        }
+
+        .greeworm {
+            left: 158px;
+            top: 334px;
+            width: 93px;
+            height: 131px;
+        }
+
+        .pinkworm {
+            left: 587px;
+            top: 166px;
+            width: 147px;
+            height: 68px;
+        }
+
+        .gummybear {
+            left: 964px;
+            top: 226px;
+            width: 131px;
+            height: 100px;
+        }
+
+        .pasticeye {
+            left: 472px;
+            top: 149px;
+            width: 106px;
+            height: 64px;
+        }
+
+        .yellowcandy {
+            left: 833px;
+            top: 486px;
+            width: 181px;
+            height: 181px;
+        }
+
+        .plasticeye2 {
+            left: 685px;
+            top: 301px;
+            width: 137px;
+            height: 71px;
+        }
+
+        .click-button-container {
+            position: absolute;
+            left: 481px;
+            top: 872px;
+            width: 278px;
+            height: 62px;
+            cursor: pointer;
+        }
+
+        .click-button-outer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 278px;
+            height: 62px;
+            background: #5eff00;
+            border: 2px solid black;
+        }
+
+        .click-button-inner {
+            position: absolute;
+            left: 7px;
+            top: 6px;
+            width: 265px;
+            height: 50px;
+            background: #5eff00;
+            border: 2px solid black;
+        }
+
+        .click-button-text {
+            position: absolute;
+            left: 15px;
+            top: 17px;
+            font-size: 24px;
+            color: black;
+            font-style: normal;
+            line-height: normal;
+        }
+
+        .reset-button {
+            position: absolute;
+            left: 1370px;
+            top: 38px;
+            width: 96px;
+            height: 96px;
+            cursor: pointer;
+        }
+
+        .reset-circle {
+            width: 96px;
+            height: 96px;
+        }
+
+        .reset-text {
+            position: absolute;
+            left: 15px;
+            top: 34px;
+            font-size: 24px;
+            color: black;
+            font-style: normal;
+            line-height: normal;
+        }
+
+        /* Frame 2 - Mouth Screen */
+        #frame2 {
+            position: relative;
+        }
+
+        .mouth {
+            position: absolute;
+            left: -6px;
+            top: -188px;
+            width: 1549px;
+            height: 1357px;
+        }
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .img-positioned {
+            position: absolute;
+            max-width: none;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Frame 1: Main Game Screen -->
+    <div id="frame1" class="screen active">
+        <!-- Star background -->
+        <div class="star-container element">
+            <div class="star-rotated">
+                <img src="https://www.figma.com/api/mcp/asset/d7e3e320-a7e4-4593-b3a3-2741a76b7d5c" alt="" class="star-img">
+            </div>
+        </div>
+
+        <!-- Cone -->
+        <div class="element cone overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/0bd46ef2-a732-4f6f-84db-db1171fd793d" alt="" class="img-positioned" style="height: 110.97%; left: -53.68%; top: -7.42%; width: 211.04%;">
+        </div>
+
+        <!-- Short cone -->
+        <div class="element shortcone overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/4900ed52-3e06-4a61-900c-14c8ec2059e7" alt="" class="img-positioned" style="height: 139.43%; left: -39.78%; top: -23.58%; width: 184.41%;">
+        </div>
+
+        <!-- Cream -->
+        <div class="element cream overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/354d4768-d8a5-4ca7-b477-41a850bc2dcb" alt="" class="img-positioned" style="height: 189.01%; left: -33.98%; top: -44.23%; width: 166.99%;">
+        </div>
+
+        <!-- Mint -->
+        <div class="element mint overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/3e48067c-70ab-4b85-a8e1-691c71e95685" alt="" class="img-positioned" style="height: 147.01%; left: -17.57%; top: -23.93%; width: 132.82%;">
+        </div>
+
+        <!-- Pink -->
+        <div class="element pink overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/921acaf0-f3f8-414c-a3c8-5abcdc677e30" alt="" class="img-positioned" style="height: 124.64%; left: -10.22%; top: -11.59%; width: 125.55%;">
+        </div>
+
+        <!-- Blue -->
+        <div class="element blue overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/f069ce96-6d67-4c99-bd9f-46f7b9d362be" alt="" class="img-positioned" style="height: 136.51%; left: -13.6%; top: -18.25%; width: 126.47%;">
+        </div>
+
+        <!-- Rainbow -->
+        <div class="element rainbow overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/0a815ec6-f8fb-440c-857a-dcd54e29c12a" alt="" class="img-positioned" style="height: 150%; left: -21.67%; top: -24.56%; width: 142.5%;">
+        </div>
+
+        <!-- Girl (clickable) -->
+        <div class="element girl" onclick="showMouth()">
+            <div class="overflow-hidden" style="width: 100%; height: 100%;">
+                <img src="https://www.figma.com/api/mcp/asset/8844a4d6-9d4e-4d36-afb6-724d4baf262f" alt="" class="img-positioned" style="height: 121.39%; left: -17.91%; top: -10.83%; width: 138.51%;">
+            </div>
+        </div>
+
+        <!-- Cherry -->
+        <div class="element cherry overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/93119696-60a3-4b19-b4d6-2d610b8a90a8" alt="" class="img-positioned" style="height: 125.09%; left: -5.42%; top: -10.91%; width: 116.61%;">
+        </div>
+
+        <!-- Pink candy -->
+        <div class="element pinkcandy overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/ca626792-315c-4da6-87e9-31fbd3681381" alt="" class="img-positioned" style="height: 204.76%; left: -12.32%; top: -50.6%; width: 124.64%;">
+        </div>
+
+        <!-- Blue candy -->
+        <div class="element bluecandy overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/37488900-8ed5-44b0-9f15-49938adb4958" alt="" class="img-positioned" style="height: 203.57%; left: -6.62%; top: -47.62%; width: 113.25%;">
+        </div>
+
+        <!-- Green candy (rotated) -->
+        <div class="element greencandy-container">
+            <div class="greencandy-rotated">
+                <div class="greencandy overflow-hidden">
+                    <img src="https://www.figma.com/api/mcp/asset/7f6d8dcf-8086-4869-8e29-e1340415ac9f" alt="" class="img-positioned" style="height: 215%; left: -10.99%; top: -55%; width: 121.99%;">
+                </div>
+            </div>
+        </div>
+
+        <!-- White worm -->
+        <div class="element whiteworm overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/474c2c66-f900-4a4f-a86e-2fce324892c9" alt="" class="img-positioned" style="height: 142.15%; left: -33.67%; top: -21.49%; width: 175.51%;">
+        </div>
+
+        <!-- Yellow worm -->
+        <div class="element yellowworm overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/383bbad2-050f-4500-83ff-801c8277416e" alt="" class="img-positioned" style="height: 131.3%; left: -49.44%; top: -13.74%; width: 193.26%;">
+        </div>
+
+        <!-- Blue worm -->
+        <div class="element blueworm overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/e8b9c92b-9df8-40bc-b4e2-ec0f877a11ac" alt="" class="img-positioned" style="height: 223.38%; left: -17.86%; top: -62.34%; width: 136.51%;">
+        </div>
+
+        <!-- Green worm -->
+        <div class="element greeworm overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/e42be301-9935-4d14-94b9-9d32c0810cb7" alt="" class="img-positioned" style="height: 131.3%; left: -37.1%; top: -12.98%; width: 184.95%;">
+        </div>
+
+        <!-- Pink worm -->
+        <div class="element pinkworm overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/a904a6b4-edb3-4c48-9a8e-290abeff34c3" alt="" class="img-positioned" style="height: 252.94%; left: -8.84%; top: -77.94%; width: 117.01%;">
+        </div>
+
+        <!-- Gummy bear -->
+        <div class="element gummybear overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/2cb36c9b-5f6d-4fa7-8180-cd73661c0e6f" alt="" class="img-positioned" style="height: 172%; left: -14.5%; top: -38.5%; width: 131.3%;">
+        </div>
+
+        <!-- Plastic eye -->
+        <div class="element pasticeye overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/dd4ac497-2a4b-4a97-9caa-0d97b5042a35" alt="" class="img-positioned" style="height: 198.44%; left: -11.32%; top: -51.56%; width: 119.81%;">
+        </div>
+
+        <!-- Yellow candy -->
+        <div class="element yellowcandy">
+            <img src="https://www.figma.com/api/mcp/asset/2434090b-b691-4aaf-8b47-88560c6fd684" alt="">
+        </div>
+
+        <!-- Plastic eye 2 -->
+        <div class="element plasticeye2 overflow-hidden">
+            <img src="https://www.figma.com/api/mcp/asset/f26f26c5-ee4e-4740-9a9b-a1eeaa697751" alt="" class="img-positioned" style="height: 227.15%; left: -8.64%; top: -63.08%; width: 117.78%;">
+        </div>
+
+        <!-- Feed button -->
+        <div class="click-button-container" onclick="showMouth()">
+            <div class="click-button-outer"></div>
+            <div class="click-button-inner"></div>
+            <div class="click-button-text">OMG JUST FEED HER PLZ</div>
+        </div>
+
+        <!-- Reset button -->
+        <div class="reset-button element" onclick="resetGame()">
+            <img src="https://www.figma.com/api/mcp/asset/b1a8bc0a-9fa3-4949-96f7-316cf8cad90d" alt="" class="reset-circle">
+            <div class="reset-text">RESET</div>
+        </div>
+    </div>
+
+    <!-- Frame 2: Mouth Screen -->
+    <div id="frame2" class="screen">
+        <!-- Mouth image -->
+        <div class="mouth element">
+            <img src="https://www.figma.com/api/mcp/asset/2a34fb6f-38a1-470b-b59c-31a9a9f8cc7b" alt="">
+        </div>
+    </div>
+
+    <script>
+        function showMouth() {
+            document.getElementById('frame1').classList.remove('active');
+            document.getElementById('frame2').classList.add('active');
+        }
+
+        function resetGame() {
+            document.getElementById('frame2').classList.remove('active');
+            document.getElementById('frame1').classList.add('active');
+        }
+
+        // Optional: Click anywhere on mouth screen to go back
+        document.getElementById('frame2').addEventListener('click', resetGame);
+    </script>
+</body>
+</html>
