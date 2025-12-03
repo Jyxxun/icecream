@@ -62,7 +62,8 @@
             cursor: grab;
             transition: transform 0.1s ease-out;
             user-select: none;
-            z-index: 1;
+            z-index: 10;
+            pointer-events: auto;
         }
 
         .draggable:active {
@@ -70,8 +71,9 @@
         }
 
         .draggable.dragging {
-            z-index: 1000;
+            z-index: 9999 !important;
             opacity: 0.9;
+            pointer-events: auto !important;
         }
 
         .cone {
@@ -129,6 +131,7 @@
             width: 631px;
             height: 720px;
             cursor: pointer;
+            z-index: 5;
         }
 
         .cherry {
@@ -277,7 +280,7 @@
         .welldone-button-container {
             position: absolute;
             left: 800px;
-            top: 872px;
+            top: 780px;
             width: 200px;
             height: 62px;
             cursor: pointer;
@@ -582,6 +585,9 @@
             draggedElement = e.currentTarget;
             draggedElement.classList.add('dragging');
 
+            // Force highest z-index
+            draggedElement.style.zIndex = '9999';
+
             const rect = draggedElement.getBoundingClientRect();
             offsetX = e.clientX - rect.left;
             offsetY = e.clientY - rect.top;
@@ -625,6 +631,8 @@
             } else {
                 // Check if dropped on a base (cone or shortcone)
                 checkIfOnBase(draggedElement);
+                // Reset z-index to normal
+                draggedElement.style.zIndex = '10';
             }
 
             draggedElement = null;
