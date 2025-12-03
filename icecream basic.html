@@ -730,9 +730,18 @@
 
             // If it's a cone or shortcone, it becomes the base
             if (itemType === 'cone' || itemType === 'shortcone') {
-                baseItem = element;
-                if (!assembledItems.includes(element)) {
-                    assembledItems.push(element);
+                // Only allow one base at a time
+                if (!baseItem) {
+                    baseItem = element;
+                    if (!assembledItems.includes(element)) {
+                        assembledItems.push(element);
+                    }
+                } else if (baseItem === element) {
+                    // Same element, do nothing
+                    return;
+                } else {
+                    // Already have a different base, don't add this one
+                    return;
                 }
                 return;
             }
