@@ -360,12 +360,15 @@
 
         .overflow-hidden {
             overflow: hidden;
-            pointer-events: none;
         }
 
         .img-positioned {
             position: absolute;
             max-width: none;
+            pointer-events: none;
+        }
+
+        .draggable .overflow-hidden {
             pointer-events: none;
         }
 
@@ -425,7 +428,7 @@
         </div>
 
         <!-- Girl (clickable) -->
-        <div class="element girl" id="girl" onclick="showMouth()">
+        <div class="element girl" id="girl">
             <div class="overflow-hidden" style="width: 100%; height: 100%;">
                 <img src="https://www.figma.com/api/mcp/asset/8844a4d6-9d4e-4d36-afb6-724d4baf262f" alt="" class="img-positioned" style="height: 121.39%; left: -17.91%; top: -10.83%; width: 138.51%;">
             </div>
@@ -537,6 +540,9 @@
         let originalPosition = { left: 0, top: 0 };
         let assembledItems = [];
         let baseItem = null; // cone or shortcone
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartY = 0;
 
         // Initialize draggable elements
         document.addEventListener('DOMContentLoaded', function() {
@@ -548,6 +554,16 @@
 
             document.addEventListener('mousemove', drag);
             document.addEventListener('mouseup', endDrag);
+
+            // Add girl click handler
+            const girl = document.getElementById('girl');
+            if (girl) {
+                girl.addEventListener('click', function(e) {
+                    if (!isDragging) {
+                        showMouth();
+                    }
+                });
+            }
         });
 
         function startDrag(e) {
@@ -555,6 +571,13 @@
             if (assembledItems.includes(e.currentTarget)) {
                 return;
             }
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            isDragging = false;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
 
             draggedElement = e.currentTarget;
             draggedElement.classList.add('dragging');
@@ -572,6 +595,13 @@
             if (!draggedElement) return;
 
             e.preventDefault();
+
+            // Check if actually dragging (moved more than 3 pixels)
+            const dx = Math.abs(e.clientX - dragStartX);
+            const dy = Math.abs(e.clientY - dragStartY);
+            if (dx > 3 || dy > 3) {
+                isDragging = true;
+            }
 
             // Calculate new position
             const newLeft = e.clientX - offsetX;
@@ -598,6 +628,11 @@
             }
 
             draggedElement = null;
+
+            // Reset isDragging after a short delay to prevent girl click
+            setTimeout(function() {
+                isDragging = false;
+            }, 100);
         }
 
         function isOverGirlCenter(element) {
